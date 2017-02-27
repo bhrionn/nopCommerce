@@ -55,6 +55,8 @@
                             $('#ph-topic .page-body').html(data.Body);
                             $('#ph-password').hide();
                             $('#ph-topic').show();
+                            //add dynamic code to the validation plugin
+                            $.validator.unobtrusive.parse('#ph-topic');
                         }
                         else {
                             $('#password-error').text(data.Error).fadeIn("slow");
