@@ -17,6 +17,7 @@ using Nop.Services.Catalog;
 using Nop.Services.Directory;
 using Nop.Services.ExportImport.Help;
 using Nop.Services.Localization;
+using Nop.Services.Logging;
 using Nop.Services.Media;
 using Nop.Services.Messages;
 using Nop.Services.Security;
@@ -59,6 +60,7 @@ namespace Nop.Services.ExportImport
         private readonly IProductTagService _productTagService;
         private readonly IWorkContext _workContext;
         private readonly ILocalizationService _localizationService;
+        private readonly ICustomerActivityService _customerActivityService;
         private readonly VendorSettings _vendorSettings;
 
         #endregion
@@ -88,6 +90,7 @@ namespace Nop.Services.ExportImport
             IProductTagService productTagService,
             IWorkContext workContext,
             ILocalizationService localizationService,
+            ICustomerActivityService customerActivityService,
             VendorSettings vendorSettings)
         {
             this._productService = productService;
@@ -113,6 +116,7 @@ namespace Nop.Services.ExportImport
             this._productTagService = productTagService;
             this._workContext = workContext;
             this._localizationService = localizationService;
+            this._customerActivityService = customerActivityService;
             this._vendorSettings = vendorSettings;
         }
 
@@ -938,10 +942,16 @@ namespace Nop.Services.ExportImport
                     if (isNew)
                     {
                         _productService.InsertProduct(product);
+
+                        //activity log
+                        _customerActivityService.InsertActivity("AddNewProduct", _localizationService.GetResource("ActivityLog.AddNewProduct"), product.Name);
                     }
                     else
                     {
                         _productService.UpdateProduct(product);
+
+                        //activity log
+                        _customerActivityService.InsertActivity("EditProduct", _localizationService.GetResource("ActivityLog.EditProduct"), product.Name);
                     }
 
                     //quantity change history
@@ -1326,9 +1336,19 @@ namespace Nop.Services.ExportImport
                     manufacturer.UpdatedOnUtc = DateTime.UtcNow;
 
                     if (isNew)
+                    {
                         _manufacturerService.InsertManufacturer(manufacturer);
+
+                        //activity log
+                        _customerActivityService.InsertActivity("AddNewManufacturer", _localizationService.GetResource("ActivityLog.AddNewManufacturer"), manufacturer.Name);
+                    }
                     else
+                    {
                         _manufacturerService.UpdateManufacturer(manufacturer);
+
+                        //activity log
+                        _customerActivityService.InsertActivity("EditManufacturer", _localizationService.GetResource("ActivityLog.EditManufacturer"), manufacturer.Name);
+                    }
 
                     //search engine name
                     if (setSeName)
@@ -1453,9 +1473,19 @@ namespace Nop.Services.ExportImport
                     category.UpdatedOnUtc = DateTime.UtcNow;
 
                     if (isNew)
+                    {
                         _categoryService.InsertCategory(category);
+
+                        //activity log
+                        _customerActivityService.InsertActivity("AddNewCategory", _localizationService.GetResource("ActivityLog.AddNewCategory"), category.Name);
+                    }
                     else
+                    {
                         _categoryService.UpdateCategory(category);
+
+                        //activity log
+                        _customerActivityService.InsertActivity("EditCategory", _localizationService.GetResource("ActivityLog.EditCategory"), category.Name);
+                    }
 
                     //search engine name
                     if (setSeName)
